@@ -18,7 +18,7 @@ namespace WpfClient
 
         private void btnYes_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("shutdown", "/t 0");
+            Process.Start("shutdown", "/s /t 0");
         }
 
         private void NoTextBlock_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
