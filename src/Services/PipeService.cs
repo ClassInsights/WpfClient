@@ -5,6 +5,8 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Windows;
+using Newtonsoft.Json;
+using WpfClient.Models;
 
 namespace WpfClient.Services
 {
@@ -36,26 +38,30 @@ namespace WpfClient.Services
                     {
                         Console.WriteLine("Reading incoming message...");
                         var message = await reader.ReadLineAsync();
-                        if (message == null) break;
-
-                        switch (message)
+                        if (message == null) continue;
+                        var packet = JsonConvert.DeserializeObject<PipeModels.Packet>(message);
+                        if (packet == null)
+                            continue;
+                        
+                        switch (packet.PacketType)
                         {
-                            case "shutdown":
-                                await Application.Current.Dispatcher.InvokeAsync(() => Application.Current.MainWindow?.Show());                                    
-                                Process.Start("shutdown", "/s /f /t 300");
-                                await writer.WriteLineAsync("OK");
-                                break;
-                            case "logoff":                                    
-                                Process.Start("shutdown", "/l /t 5");
-                                await writer.WriteLineAsync("OK");
-                                break;
-                            case string s when s.StartsWith("nextLesson_"):                                    
-                                var subMessage = message.Substring(11);
+                            case PipeModels.Type.Shutdown:
+                                var shutdownData = JsonConvert.DeserializeObject<PipeModels.Packet<PipeModels.ShutdownData>>(message)?.Data;
+                                if (shutdownData == null) break;
+                                
                                 await Application.Current.Dispatcher.InvokeAsync(() =>
                                 {
                                     if (Application.Current.MainWindow is MainWindow window)
-                                        window.NextLesson.Content = string.IsNullOrWhiteSpace(subMessage) ? "" : $"Nächste Stunde: {subMessage} Uhr";
+                                        window.NextLesson.Content = string.IsNullOrWhiteSpace(shutdownData.NextLesson) ? "" : $"Nächste Stunde: {shutdownData.NextLesson} Uhr";
+                                    Application.Current.MainWindow?.Show();
                                 });
+                                
+                                Process.Start("shutdown", "/s /f /t 300");
+                                await writer.WriteLineAsync("OK");
+                                break;
+                            case PipeModels.Type.Logoff:                                    
+                                Process.Start("shutdown", "/l /t 5");
+                                await writer.WriteLineAsync("OK");
                                 break;
                         }
 
