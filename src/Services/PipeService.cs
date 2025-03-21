@@ -34,7 +34,7 @@ namespace WpfClient.Services
                     _ = Task.Factory.StartNew(() => SendHeartbeats(writer), TaskCreationOptions.LongRunning);
 
                     // Listen for server messages
-                    while (true)
+                    while (client.IsConnected)
                     {
                         Console.WriteLine("Reading incoming message...");
                         var message = await reader.ReadLineAsync();
