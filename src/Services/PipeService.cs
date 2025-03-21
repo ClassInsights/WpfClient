@@ -63,6 +63,13 @@ namespace WpfClient.Services
                                 Process.Start("shutdown", "/l /t 5");
                                 await writer.WriteLineAsync("OK");
                                 break;
+                            case PipeModels.Type.Afk:
+                                var afkData = JsonConvert.DeserializeObject<PipeModels.Packet<PipeModels.AfkData>>(message)?.Data;
+                                if (afkData == null) break;
+                                
+                                var timeout = afkData.Timeout;
+                                _ = Task.Run(() => AfkService.StartAsync(timeout * 60_000));
+                                break;
                         }
 
                         Console.WriteLine($@"Message from server: {message}");

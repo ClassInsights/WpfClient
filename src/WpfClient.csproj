@@ -100,6 +100,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Models\PipeModels.cs" />
+    <Compile Include="Services\AfkService.cs" />
     <Compile Include="Services\PipeService.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

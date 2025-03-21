@@ -32,6 +32,11 @@ namespace WpfClient.Models
 
         public class LogOffData {}
 
+        public class AfkData
+        {
+            public int Timeout { get; set; }
+        }
+
         public enum Reasons
         {
             LessonsOver,
@@ -42,6 +47,7 @@ namespace WpfClient.Models
         {
             Shutdown,
             Logoff,
+            Afk,
             None
         }
     }
