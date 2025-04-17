@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Security.Principal;
+using System.Threading.Tasks;
 using System.Windows;
 using WpfClient.Services;
 
@@ -9,6 +10,14 @@ namespace WpfClient
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+            
+            var identity = WindowsIdentity.GetCurrent();
+            if (identity.User != null && (identity.User.IsWellKnown(WellKnownSidType.LocalSystemSid) || identity.User.IsWellKnown(WellKnownSidType.AccountDomainAdminsSid)))
+            {
+                Current.Shutdown();
+                return;
+            }                      
+            
             MainWindow = new MainWindow();
 
             _ = new System.Windows.Forms.NotifyIcon
