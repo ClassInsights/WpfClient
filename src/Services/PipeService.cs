@@ -24,7 +24,6 @@ namespace WpfClient.Services
                 {
                     await client.ConnectAsync(); // Connect to the server
 
-                    var reader = new StreamReader(client);
                     var writer = new StreamWriter(client) { AutoFlush = true };
                     
                     // Send username to the server
@@ -33,6 +32,7 @@ namespace WpfClient.Services
                     // Start heartbeat in a separate task
                     _ = Task.Factory.StartNew(() => SendHeartbeats(writer), TaskCreationOptions.LongRunning);
 
+                    var reader = new StreamReader(client);
                     // Listen for server messages
                     while (client.IsConnected)
                     {
